@@ -5,6 +5,8 @@ import router from './router'
 import { Button } from "element-ui"
 
 Vue.config.productionTip = false
+// @ is an alias to /src
+
 
 Vue.use(Button)
 
