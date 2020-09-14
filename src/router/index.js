@@ -11,12 +11,23 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () =>  import("../views/Login.vue")
+    component: () => import("../views/Login.vue")
   },
   {
     path: '/home',
     name: 'home',
-    component: () => import('../views/Home.vue')
+    component: () => import('../views/Home.vue'),
+    redirect: '/welcom',
+    children: [
+      {
+        path: '/welcom',
+        component: () => import('../views/Welcom.vue')
+      },
+      {
+        path: '/users',
+        component: () => import('../components/user/Users.vue')
+      }
+    ]
   }
 ]
 
@@ -25,9 +36,10 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if(to.paht == '/login') return next({name: 'login'});
+  //  这里要防止棧溢出调用
+  if (to.path == '/login') return next();
   const tokentStr = window.sessionStorage.getItem('token');
-  if(!tokentStr) return next({ name: 'login'});
+  if (!tokentStr) return next({ name: 'login' });
   next();
 })
 

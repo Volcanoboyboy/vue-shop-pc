@@ -7,7 +7,9 @@
       </div>
       <!-- 登录表单区域 -->
       <!-- 账号 -->
-      <!-- 给form表单绑定一个form对象,然后数据就绑定在这个对象的属性上面 -->
+      <!-- 给form表单绑定一个ref:form对象,然后数据就绑定在这个对象的属性上面 -->
+      <!-- model是表单的数据对象 -->
+      <!-- !!!vue中给表单绑定一个ref属性就能拿到表单对象,如果是一个原生标签就是DOM对象 -->
       <el-form
         ref="loginFormRef"
         label-width="0px"
@@ -28,7 +30,7 @@
         </el-form-item>
         <!-- 登录和重置 -->
         <el-form-item class="btns">
-          <el-button type="primary" @click="login">提交</el-button>
+          <el-button type="primary" @click="login">登录</el-button>
           <el-button type="info" @click="resetLoginFrom">重置</el-button>
         </el-form-item>
       </el-form>
@@ -73,6 +75,7 @@ export default {
       this.$refs.loginFormRef.resetFields()
     },
     //登录
+    // options 是浏览器自动发送的预检请求,用于检测是否跨域,判断是否发送真实请求
     login() {
       this.$refs.loginFormRef.validate(async (valid) => {
         if (!valid) return
@@ -92,9 +95,6 @@ export default {
         window.sessionStorage.setItem("token", res.data.token)
         this.$router.push({ name: "home" })
       })
-    },
-    loginHandle() {
-      this.login()
     },
   },
 }
