@@ -16,7 +16,7 @@
           class="el-menu-vertical-demo"
           background-color="#333744"
           text-color="#fff"
-          active-text-color
+          active-text-color="##409EFF"
           unique-opened
           :collapse="isCollapse"
           :collapse-transition="false"
@@ -36,7 +36,7 @@
               v-for="subItem in item.children"
               :key="subItem.id"
               :index="'/' + subItem.path"
-              @saveNavStatu="saveNavStatu(subItem.path)"
+              @click="saveNavStatu('/' + subItem.path)"
             >
               <template slot="title">
                 <i class="el-icon-menu"></i>
@@ -69,7 +69,7 @@ export default {
         145: "iconfont icon-baobiao",
       },
       isCollapse: false,
-      activePath: "",
+      activePath: sessionStorage.getItem("activePath"),
     }
   },
   created() {
@@ -78,12 +78,11 @@ export default {
   methods: {
     //  退出登录
     logout() {
-      window.sessionStorage.clear()
+      window.sessionStorage.removeItem("token")
       this.$router.push({ name: "login" })
     },
     async getMenuList() {
       const { data: res } = await this.$axios.get("menus")
-      console.log(res)
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.menuList = res.data
     },
