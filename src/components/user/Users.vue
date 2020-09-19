@@ -12,7 +12,12 @@
       <!-- 搜索卡片区域 -->
       <el-row :gutter="14">
         <el-col :span="8">
-          <el-input placeholder="请输入搜索内容" v-model="queryInfo.query" clearable @clear="clearHandel">
+          <el-input
+            placeholder="请输入搜索内容"
+            v-model.trim="queryInfo.query"
+            clearable
+            @clear="clearHandel"
+          >
             <!-- input的slot配置input的放置内容的位置 -->
             <el-button slot="append" icon="el-icon-search" @click="searchUser"></el-button>
           </el-input>
@@ -25,7 +30,7 @@
       <!-- 列表区域 -->
       <!-- 这里给table指定数据数组,然后在列指定属性,然后table就会自动按数组项生成行 -->
       <el-table border stripe :data="userList">
-        <el-table-column type="index"></el-table-column>
+        <el-table-column type="index" label="#"></el-table-column>
         <el-table-column label="姓名" prop="username"></el-table-column>
         <el-table-column label="邮箱" prop="email"></el-table-column>
         <el-table-column label="电话" prop="mobile"></el-table-column>
@@ -54,7 +59,12 @@
             ></el-button>
             <!-- 分配角色按钮 -->
             <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+              <el-button
+                type="warning"
+                icon="el-icon-setting"
+                size="mini"
+                @click="openDispatchRole(scop.row)"
+              ></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -112,15 +122,43 @@
         <el-button type="primary" @click="updateUserInfo">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 分配角色对话框 -->
+    <el-dialog
+      title="分配角色"
+      :visible.sync="rolesDialogVisible"
+      width="50%"
+      @close="setRoleDialogClosed"
+    >
+      <p>当前的用户: {{userInfo.username}}</p>
+      <p>当前的角色: {{userInfo.role_name}}</p>
+      <p>
+        分配新角色:
+        <el-select v-model="selectedRole" clearable placeholder="请选择">
+          <el-option
+            v-for="item in roleList"
+            :key="item.id"
+            :label="item.roleName"
+            :value="item.id"
+          ></el-option>
+        </el-select>
+      </p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="rolesDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dispatchNewRole">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 export default {
+  name: "users",
   created() {
     this.getUsersInfo()
   },
   data() {
+    // 这里可以直接在验证规则里面配置pattern正则是一样的
     var checkEmail = (rule, value, callback) => {
       const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
       if (regEmail.test(value)) {
@@ -157,6 +195,16 @@ export default {
         email: "",
         mobile: "",
       },
+      // ----分配角色数据
+      // 分配角色对话框是否可见
+      rolesDialogVisible: false,
+      // 角色列表
+      roleList: [],
+      // 用户信息
+      userInfo: {},
+      //  选择的角色
+      selectedRole: "",
+
       //  修改用户信息
       editForm: {},
       //  添加用户表单验证规则,理论上是可以通用的,我就不重新写了
@@ -294,34 +342,74 @@ export default {
         type: "warning",
       })
         .then((resConfirm) => {
-          this.$axios.delete("users/" + id).then(({ data: res }) => {
-            if (res.meta.status !== 200) {
-              this.$message.error("删除失败")
-            }
-            this.getUsersInfo()
-            this.$message.success("删除成功")
-          })
+          return this.$axios.delete("users/" + id)
+        })
+        .then(({ data: res }) => {
+          if (res.meta.status !== 200) {
+            this.$message.error("删除失败")
+          }
+          this.getUsersInfo()
+          this.$message.success("删除成功")
         })
         .catch((errConfirm) => {
-          this.$message({
-            type: "info",
-            message: "已取消删除",
-          })
+          if (errConfirm === "cancel") {
+            this.$message({
+              type: "info",
+              message: "已取消删除",
+            })
+          }
         })
+    },
+    //  打开分配角色对话框
+    openDispatchRole(role) {
+      this.userInfo = role
+      this.$axios
+        .get("roles")
+        .then(({ data: res }) => {
+          if (res.meta.status !== 200) {
+            this.$message.error("获取角色失败")
+            return
+          }
+          this.roleList = res.data
+          this.$message.success("获取角色列表成功")
+        })
+        .catch((err) => {
+          this.$message.error("服务器错误")
+        })
+      this.rolesDialogVisible = true
+    },
+    dispatchNewRole() {
+      this.$axios
+        .put(`users/${this.userInfo.id}/role`, {
+          rid: this.selectedRole,
+        })
+        .then(({ data: res }) => {
+          if (res.meta.status !== 200) {
+            this.$message.error("分配角色失败")
+            return
+          }
+          this.getUsersInfo()
+          this.$message.success("分配角色成功")
+        })
+        .catch((err) => {
+          this.$message.error("服务器错误")
+        })
+      this.rolesDialogVisible = false
+    },
+    // 监听分配角色对话框关闭事件
+    setRoleDialogClosed() {
+      this.selectedRole = ""
+      this.userInfo = {}
     },
   },
 }
 </script>
 
 <style lang="less" scoped>
-.el-card {
-  margin-top: 15px;
+.el-row {
+  margin-bottom: 15px;
 }
 .el-table {
-  margin-top: 15px;
   font-size: 12px;
-}
-.el-pagination {
-  margin-top: 15px;
 }
 </style>

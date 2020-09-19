@@ -11,23 +11,65 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import("../views/Login.vue")
+    component: () => import(/* webpackChunkName: "login_home_welcome" */ "../views/Login.vue")
   },
   {
     path: '/home',
     name: 'home',
-    component: () => import('../views/Home.vue'),
+    component: () => import(/* webpackChunkName: "login_home_welcome" */ '../views/Home.vue'),
     redirect: '/welcom',
     children: [
       {
         path: '/welcom',
-        component: () => import('../views/Welcom.vue')
+        name: 'welcom',
+        component: () => import(/* webpackChunkName: "login_home_welcome" */'../views/Welcom.vue')
       },
       {
         path: '/users',
+        name: 'users',
         component: () => import('../components/user/Users.vue')
+      },
+      {
+        path: '/rights',
+        name: 'rights',
+        component: () => import('../components/power/Rights.vue')
+      },
+      {
+        path: '/roles',
+        name: 'roles',
+        component: () => import('../components/power/Roles.vue')
+      },
+      {
+        path: '/params',
+        name: 'params',
+        component: () => import('../components/goods/Params.vue')
+      },
+      {
+        path: '/categories',
+        name: 'cate',
+        component: () => import('../components/goods/Categories.vue')
+      },
+      {
+        path: '/orders',
+        name: 'orders',
+        component: () => import('../components/orders/Orders.vue')
+      },
+      {
+        path: '/reports',
+        name: 'reports',
+        component: () => import('../components/report/Reports.vue')
+      },
+      {
+        path: '/goods',
+        name: 'goods',
+        component: () => import('../components/common/NotFount.vue')
       }
     ]
+  },
+  {
+    path: '*',
+    name: 'pageNotFound',
+    component: () => import('../components/common/NotFount.vue')
   }
 ]
 

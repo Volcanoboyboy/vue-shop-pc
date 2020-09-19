@@ -7,5 +7,6 @@
 <style lang="less" scoped>
 #app {
   height: 100%;
+  min-width: 1366px;
 }
 </style>

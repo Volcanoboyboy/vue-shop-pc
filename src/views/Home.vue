@@ -16,7 +16,7 @@
           class="el-menu-vertical-demo"
           background-color="#333744"
           text-color="#fff"
-          active-text-color="##409EFF"
+          active-text-color="#409EFF"
           unique-opened
           :collapse="isCollapse"
           :collapse-transition="false"
@@ -69,6 +69,7 @@ export default {
         145: "iconfont icon-baobiao",
       },
       isCollapse: false,
+      // 可以利用这种方式更简便 this.activeMenuIndex = location.hash.slice(2);
       activePath: sessionStorage.getItem("activePath"),
     }
   },
