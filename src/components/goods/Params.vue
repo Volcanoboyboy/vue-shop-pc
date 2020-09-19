@@ -365,7 +365,7 @@ export default {
             return
           }
           this.getParamsData()
-          this.message.success("修改参数成功")
+          this.$message.success("修改参数成功")
         })
         .catch((err) => {
           this.$message.info("服务器错误")
@@ -373,9 +373,9 @@ export default {
       this.editDialogVisible = false
     },
 
-    // 监听编辑对话框关闭事件,重置表达
+    // 监听编辑对话框关闭事件,重置表单
     closeParamsDialog() {
-      this.$refs.editParamsFormRef.resetFields()
+      // this.$refs.editParamsFormRef.resetFields()
     },
 
     // ---------添加参数事件等
@@ -395,12 +395,17 @@ export default {
           })
         })
         .then(({ data: res }) => {
+          console.log(res, "params页面")
           if (res.meta.status !== 200) {
             this.$message.error("添加参数失败")
             return
           }
           this.getParamsData()
           this.$message.success("添加参数成功")
+          //  千万要注意
+        })
+        .catch((err) => {
+          this.$message.info("取消添加")
         })
       this.addDialogVisible = false
     },

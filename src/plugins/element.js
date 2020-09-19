@@ -36,7 +36,7 @@ import {
     Tabs,
     Timeline,
     TimelineItem,
-    Notification
+    Notification,
 } from 'element-ui'
 
 Vue.use(Timeline)

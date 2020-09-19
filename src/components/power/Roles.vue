@@ -333,6 +333,7 @@ export default {
             return
           }
           this.allRightsList = res.data
+          //  这里是放在一个异步当中
           this.getLeafKey(role, this.defKeys)
           this.$message.success("获取权限列表成功")
         })

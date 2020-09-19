@@ -20,7 +20,9 @@
         row-key="cat_id"
         :tree-props="treeProp"
       >
-        <el-table-column type="index" label="#"></el-table-column>
+        <el-table-column type="index" label="#">
+          <template #default="{ row }">{{ row.__tz_index }}</template>
+        </el-table-column>
         <el-table-column prop="cat_name" label="分类名称"></el-table-column>
         <el-table-column label="是否有效">
           <!-- 是否有效 -->
@@ -176,7 +178,12 @@ export default {
             this.$message.error("获取商品分类列表失败")
             return
           }
-          this.cateList = res.data.result
+          let index = (this.queryInfo.pagenum - 1) * this.queryInfo.pagesize + 1
+          this.cateList = res.data.result.map((v) => {
+            v.__tz_index = index
+            index++
+            return v
+          })
           this.total = res.data.total
         })
         .catch((err) => {
